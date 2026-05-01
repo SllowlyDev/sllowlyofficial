@@ -166,13 +166,13 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 content-section">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 content-section">
                 <!-- Left: Form -->
-                <div class="lg:col-span-2 space-y-6">
+                <div class="lg:col-span-2 space-y-4 lg:space-y-6">
                     <!-- Cart Items -->
-                    <div class="glass glass-card rounded-3xl p-6">
-                        <h2 class="text-xl font-bold mb-4 flex items-center">
-                            <i class="fas fa-shopping-cart text-purple-400 mr-3"></i>Keranjang Belanja
+                    <div class="glass glass-card rounded-3xl p-4 lg:p-6">
+                        <h2 class="text-lg lg:text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-shopping-cart text-purple-400 mr-2 lg:mr-3"></i>Keranjang Belanja
                         </h2>
                         <div id="cartItems" class="space-y-4">
                             <!-- Cart items rendered here -->
@@ -189,9 +189,9 @@
                     </div>
 
                     <!-- Customer Form -->
-                    <div class="glass glass-card rounded-3xl p-6" id="customerForm">
-                        <h2 class="text-xl font-bold mb-4 flex items-center">
-                            <i class="fas fa-user text-purple-400 mr-3"></i>Data Pembeli
+                    <div class="glass glass-card rounded-3xl p-4 lg:p-6" id="customerForm">
+                        <h2 class="text-lg lg:text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-user text-purple-400 mr-2 lg:mr-3"></i>Data Pembeli
                         </h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -210,9 +210,9 @@
                     </div>
 
                     <!-- Payment Method -->
-                    <div class="glass glass-card rounded-3xl p-6" id="paymentSection">
-                        <h2 class="text-xl font-bold mb-4 flex items-center">
-                            <i class="fas fa-credit-card text-purple-400 mr-3"></i>Metode Pembayaran
+                    <div class="glass glass-card rounded-3xl p-4 lg:p-6" id="paymentSection">
+                        <h2 class="text-lg lg:text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-credit-card text-purple-400 mr-2 lg:mr-3"></i>Metode Pembayaran
                         </h2>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div class="payment-card glass rounded-2xl p-4 border border-purple-500/20" data-method="transfer" onclick="selectPayment(this)">
@@ -262,9 +262,9 @@
                     </div>
 
                     <!-- Upload Proof -->
-                    <div class="glass glass-card rounded-3xl p-6" id="uploadSection">
-                        <h2 class="text-xl font-bold mb-4 flex items-center">
-                            <i class="fas fa-upload text-purple-400 mr-3"></i>Upload Bukti Transfer
+                    <div class="glass glass-card rounded-3xl p-4 lg:p-6" id="uploadSection">
+                        <h2 class="text-lg lg:text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-upload text-purple-400 mr-2 lg:mr-3"></i>Upload Bukti Transfer
                         </h2>
                         <div class="upload-area rounded-2xl p-8 text-center" id="uploadArea">
                             <input type="file" id="proofFile" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
@@ -288,8 +288,8 @@
                 </div>
 
                 <!-- Right: Summary -->
-                <div class="lg:col-span-1">
-                    <div class="glass glass-card rounded-3xl p-6 sticky top-24">
+                <div class="lg:col-span-1 mt-6 lg:mt-0">
+                    <div class="glass glass-card rounded-3xl p-4 lg:p-6 lg:sticky lg:top-24">
                         <h2 class="text-xl font-bold mb-4">Ringkasan Pesanan</h2>
                         <div id="orderSummary" class="space-y-3 mb-6">
                             <!-- Summary items -->
