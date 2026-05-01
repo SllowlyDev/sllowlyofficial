@@ -201,8 +201,8 @@
                 <!-- Overview Tab -->
                 <div id="content-overview" class="space-y-8">
                     <!-- Stats -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="stat-card glass rounded-2xl p-5">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+                        <div class="stat-card glass rounded-2xl p-4 lg:p-5">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
                                     <i class="fas fa-shopping-bag text-purple-400"></i>
@@ -244,23 +244,23 @@
                     </div>
 
                     <!-- Recent Orders Table -->
-                    <div class="glass rounded-3xl p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-lg font-bold">Pesanan Terbaru</h2>
+                    <div class="glass rounded-3xl p-4 lg:p-6">
+                        <div class="flex items-center justify-between mb-4 lg:mb-6">
+                            <h2 class="text-base lg:text-lg font-bold">Pesanan Terbaru</h2>
                             <button onclick="showTab('orders')" class="text-sm text-purple-400 hover:text-purple-300">
                                 Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
                             </button>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
+                        <div class="overflow-x-auto -mx-2 px-2">
+                            <table class="w-full min-w-[600px]">
                                 <thead>
-                                    <tr class="text-left text-gray-500 text-sm border-b border-purple-500/10">
-                                        <th class="pb-3 font-medium">Invoice</th>
-                                        <th class="pb-3 font-medium">Pelanggan</th>
-                                        <th class="pb-3 font-medium">Produk</th>
-                                        <th class="pb-3 font-medium">Total</th>
-                                        <th class="pb-3 font-medium">Status</th>
-                                        <th class="pb-3 font-medium">Tanggal</th>
+                                    <tr class="text-left text-gray-500 text-xs lg:text-sm border-b border-purple-500/10">
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Invoice</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Pelanggan</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Produk</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Total</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Status</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap">Tanggal</th>
                                     </tr>
                                 </thead>
                                 <tbody id="recentOrdersTable" class="text-sm">
@@ -351,17 +351,17 @@
                             </h3>
                             <span class="text-xs text-gray-500">Klik tombol <i class="fas fa-check text-green-400"></i> untuk verifikasi</span>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
+                        <div class="overflow-x-auto -mx-2 px-2">
+                            <table class="w-full min-w-[700px]">
                                 <thead>
-                                    <tr class="text-left text-gray-500 text-sm border-b border-purple-500/10">
-                                        <th class="pb-3 font-medium">Invoice</th>
-                                        <th class="pb-3 font-medium">Pelanggan</th>
-                                        <th class="pb-3 font-medium">Produk</th>
-                                        <th class="pb-3 font-medium">Total</th>
-                                        <th class="pb-3 font-medium">Status</th>
-                                        <th class="pb-3 font-medium">Bukti TF</th>
-                                        <th class="pb-3 font-medium">Verifikasi</th>
+                                    <tr class="text-left text-gray-500 text-xs lg:text-sm border-b border-purple-500/10">
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Invoice</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Pelanggan</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Produk</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Total</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Status</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap pr-4">Bukti TF</th>
+                                        <th class="pb-3 font-medium whitespace-nowrap">Verifikasi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="allOrdersTable" class="text-sm">
