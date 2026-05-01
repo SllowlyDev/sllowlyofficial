@@ -1,3 +1,8 @@
+// ============================================
+// SllowlyStore - Main JavaScript
+// LocalStorage-based e-commerce system
+// ============================================
+
 // --- DATA INITIALIZATION ---
 const DEFAULT_PRODUCTS = [
     {
@@ -1670,39 +1675,65 @@ function renderProductsWithQty() {
     const products = getProducts();
     initProductQuantities();
 
+    // Define unique color-matching logos for each product
+    const productLogos = {
+        1: { icon: 'fa-robot', bg: 'from-purple-600 to-indigo-600', accent: 'text-purple-400' },
+        2: { icon: 'fa-facebook-f', bg: 'from-blue-600 to-blue-800', accent: 'text-blue-400' },
+        3: { icon: 'fa-facebook', bg: 'from-blue-500 to-cyan-600', accent: 'text-cyan-400' },
+        4: { icon: 'fa-user-shield', bg: 'from-indigo-500 to-purple-600', accent: 'text-indigo-400' },
+        5: { icon: 'fa-lock', bg: 'from-violet-600 to-purple-700', accent: 'text-violet-400' },
+        6: { icon: 'fa-envelope-open', bg: 'from-red-500 to-orange-600', accent: 'text-red-400' },
+        7: { icon: 'fa-envelope', bg: 'from-green-500 to-teal-600', accent: 'text-green-400' }
+    };
+
     grid.innerHTML = products.map((product, index) => {
         const stockPercent = Math.min((product.stock / 1000) * 100, 100);
         const stockColor = product.stock > 100 ? 'bg-green-500' : (product.stock > 50 ? 'bg-yellow-500' : 'bg-red-500');
         const stockText = product.stock > 100 ? 'Stok Melimpah' : (product.stock > 50 ? 'Stok Menipis' : 'Stok Terbatas');
+        const logo = productLogos[product.id] || { icon: 'fa-box', bg: 'from-purple-600 to-indigo-600', accent: 'text-purple-400' };
 
         return `
         <div class="glass rounded-3xl overflow-hidden card-hover scroll-reveal flex flex-col" style="transition-delay: ${index * 0.1}s">
-            <!-- Product Image/Icon Area -->
-            <div class="relative h-44 bg-gradient-to-br ${product.color} flex items-center justify-center overflow-hidden flex-shrink-0">
-                <div class="absolute inset-0 bg-black/20"></div>
-                <div class="absolute inset-0 shimmer opacity-30"></div>
-                <i class="fab ${product.icon} text-7xl text-white/20 transform hover:scale-110 transition-transform duration-500"></i>
+            <!-- Product Logo Area with Color-Matching Background -->
+            <div class="relative h-48 bg-gradient-to-br ${logo.bg} flex items-center justify-center overflow-hidden flex-shrink-0">
+                <div class="absolute inset-0 bg-black/10"></div>
+                <div class="absolute inset-0 shimmer opacity-20"></div>
 
-                <!-- Badge -->
+                <!-- Animated Background Circles -->
+                <div class="absolute top-4 left-4 w-20 h-20 rounded-full bg-white/5 blur-xl"></div>
+                <div class="absolute bottom-4 right-4 w-24 h-24 rounded-full bg-white/5 blur-xl"></div>
+
+                <!-- Product Logo Icon - Color Matching -->
+                <div class="product-logo relative z-10 w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
+                    <i class="fab ${logo.icon} text-3xl text-white drop-shadow-lg"></i>
+                </div>
+
+                <!-- Category Badge -->
                 <div class="absolute top-3 left-3">
-                    <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs font-medium border border-white/10">
+                    <span class="px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-sm text-white text-xs font-semibold border border-white/10 flex items-center gap-1.5">
+                        <i class="fas fa-tag ${logo.accent} text-[10px]"></i>
                         ${product.badge}
                     </span>
                 </div>
 
-                <!-- Stock Indicator -->
+                <!-- Stock Badge -->
                 <div class="absolute top-3 right-3">
-                    <span class="px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm text-white text-xs font-medium border border-white/10 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full ${stockColor} animate-pulse"></span>
+                    <span class="px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-sm text-white text-xs font-semibold border border-white/10 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full ${stockColor} animate-pulse"></span>
                         ${product.stock} tersedia
                     </span>
                 </div>
 
-                <!-- Price Tag -->
-                <div class="absolute bottom-3 left-3 right-3">
-                    <div class="price-tag rounded-xl px-3 py-2 backdrop-blur-sm border border-white/10">
-                        <div class="text-xs text-purple-200 mb-0.5">Harga per item</div>
-                        <div class="text-xl font-bold text-white">${formatPrice(product.price)}</div>
+                <!-- Price Tag at Bottom -->
+                <div class="absolute bottom-0 left-0 right-0 p-3">
+                    <div class="price-tag rounded-xl px-4 py-2.5 backdrop-blur-md border border-white/10 flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] text-white/70 uppercase tracking-wider">Harga</div>
+                            <div class="text-lg font-bold text-white">${formatPrice(product.price)}</div>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                            <i class="fas fa-tag text-white/60 text-xs"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1714,11 +1745,14 @@ function renderProductsWithQty() {
 
                 <!-- Stock Bar -->
                 <div class="mb-4">
-                    <div class="flex justify-between text-xs mb-1">
-                        <span class="text-gray-500">${stockText}</span>
+                    <div class="flex justify-between text-xs mb-1.5">
+                        <span class="text-gray-500 flex items-center gap-1">
+                            <i class="fas fa-cubes text-[10px]"></i>
+                            ${stockText}
+                        </span>
                         <span class="text-gray-400">${product.stock} unit</span>
                     </div>
-                    <div class="h-1.5 rounded-full bg-gray-700/50 overflow-hidden">
+                    <div class="h-2 rounded-full bg-gray-700/50 overflow-hidden">
                         <div class="h-full rounded-full ${stockColor} stock-bar" style="width: ${stockPercent}%"></div>
                     </div>
                 </div>
@@ -1726,12 +1760,15 @@ function renderProductsWithQty() {
                 <!-- Quantity Selector -->
                 <div class="qty-selector glass rounded-xl p-3 mb-3 border border-purple-500/10">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs text-gray-400">Jumlah Pembelian</span>
-                        <span class="text-xs text-purple-400 font-medium" id="subtotal-${product.id}">${formatPrice(product.price)}</span>
+                        <span class="text-xs text-gray-400 flex items-center gap-1">
+                            <i class="fas fa-calculator text-[10px]"></i>
+                            Jumlah
+                        </span>
+                        <span class="text-xs font-bold ${logo.accent}" id="subtotal-${product.id}">${formatPrice(product.price)}</span>
                     </div>
-                    <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center justify-between gap-2">
                         <button onclick="updateProductQty(${product.id}, -1)" 
-                            class="qty-btn w-10 h-10 rounded-lg glass flex items-center justify-center text-gray-400 hover:text-white border border-purple-500/20"
+                            class="qty-btn w-9 h-9 rounded-lg glass flex items-center justify-center text-gray-400 hover:text-white border border-purple-500/20"
                             ${product.stock <= 0 ? 'disabled' : ''}>
                             <i class="fas fa-minus text-xs"></i>
                         </button>
@@ -1740,12 +1777,12 @@ function renderProductsWithQty() {
                             <input type="number" id="qty-input-${product.id}" 
                                 value="1" min="1" max="${product.stock}"
                                 onchange="setProductQty(${product.id}, this.value)"
-                                class="qty-input w-16 text-center bg-transparent text-white font-bold text-lg focus:outline-none"
+                                class="qty-input w-14 text-center bg-transparent text-white font-bold text-lg focus:outline-none"
                                 ${product.stock <= 0 ? 'disabled' : ''}>
                         </div>
 
                         <button onclick="updateProductQty(${product.id}, 1)" 
-                            class="qty-btn w-10 h-10 rounded-lg glass flex items-center justify-center text-gray-400 hover:text-white border border-purple-500/20"
+                            class="qty-btn w-9 h-9 rounded-lg glass flex items-center justify-center text-gray-400 hover:text-white border border-purple-500/20"
                             ${product.stock <= 0 ? 'disabled' : ''}>
                             <i class="fas fa-plus text-xs"></i>
                         </button>
@@ -1754,7 +1791,7 @@ function renderProductsWithQty() {
 
                 <!-- Add to Cart Button -->
                 <button id="add-btn-${product.id}" onclick="addToCartWithQty(${product.id})" 
-                    class="w-full btn-gradient py-3.5 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2"
+                    class="w-full btn-gradient py-3 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2"
                     ${product.stock <= 0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>
                     <i class="fas fa-cart-plus"></i>
                     <span>Tambah ke Keranjang</span>
