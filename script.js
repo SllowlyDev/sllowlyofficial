@@ -12,7 +12,7 @@ const DEFAULT_PRODUCTS = [
         price: 35000,
         stock: 50,
         category: "tools",
-        icon: "fa-robot",
+        icon: "fas fa-robot",
         color: "from-purple-600 to-indigo-600",
         badge: "Tools"
     },
@@ -23,7 +23,7 @@ const DEFAULT_PRODUCTS = [
         price: 500,
         stock: 1000,
         category: "facebook",
-        icon: "fa-facebook",
+        icon: "fas fa-user",
         color: "from-blue-600 to-blue-800",
         badge: "FB Mentah"
     },
@@ -34,7 +34,7 @@ const DEFAULT_PRODUCTS = [
         price: 2000,
         stock: 500,
         category: "facebook",
-        icon: "fa-facebook",
+        icon: "fas fa-user-check",
         color: "from-blue-500 to-cyan-600",
         badge: "FB Fresh"
     },
@@ -45,7 +45,7 @@ const DEFAULT_PRODUCTS = [
         price: 3000,
         stock: 300,
         category: "facebook",
-        icon: "fa-facebook",
+        icon: "fas fa-id-card",
         color: "from-indigo-500 to-purple-600",
         badge: "FB Fresh Low"
     },
@@ -56,7 +56,7 @@ const DEFAULT_PRODUCTS = [
         price: 5000,
         stock: 200,
         category: "facebook",
-        icon: "fa-facebook",
+        icon: "fas fa-shield-alt",
         color: "from-violet-600 to-purple-700",
         badge: "FB Fresh Medium"
     },
@@ -67,7 +67,7 @@ const DEFAULT_PRODUCTS = [
         price: 3000,
         stock: 150,
         category: "gmail",
-        icon: "fa-envelope",
+        icon: "fas fa-envelope-open-text",
         color: "from-red-500 to-orange-600",
         badge: "Gmail Bekas"
     },
@@ -78,7 +78,7 @@ const DEFAULT_PRODUCTS = [
         price: 5000,
         stock: 400,
         category: "gmail",
-        icon: "fa-envelope",
+        icon: "fas fa-envelope",
         color: "from-green-500 to-teal-600",
         badge: "Gmail Fresh"
     }
@@ -1163,44 +1163,45 @@ function renderAdminDashboard() {
     if (rejectedCount) rejectedCount.textContent = rejectedOrders;
     if (totalRevenue) totalRevenue.textContent = formatPrice(revenue);
 
-    // Recent orders table
-    const tableBody = document.getElementById('recentOrdersTable');
-    if (tableBody) {
+    // Recent orders - card layout for mobile
+    const recentList = document.getElementById('recentOrdersList');
+    if (recentList) {
         const recentOrders = orders.slice(0, 5);
 
         if (recentOrders.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-gray-500">Belum ada pesanan</td></tr>`;
+            recentList.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-inbox text-3xl text-gray-600 mb-3"></i>
+                    <p class="text-gray-500 text-sm">Belum ada pesanan</p>
+                </div>
+            `;
         } else {
-            tableBody.innerHTML = recentOrders.map(order => {
+            const statusColors = {
+                'Diproses': 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
+                'Berhasil': 'text-green-400 bg-green-500/10 border-green-500/20',
+                'Ditolak': 'text-red-400 bg-red-500/10 border-red-500/20'
+            };
+
+            recentList.innerHTML = recentOrders.map(order => {
                 const date = new Date(order.date);
                 const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 
-                const statusColors = {
-                    'Diproses': 'text-yellow-400 bg-yellow-500/10',
-                    'Berhasil': 'text-green-400 bg-green-500/10',
-                    'Ditolak': 'text-red-400 bg-red-500/10'
-                };
-
-                const statusIcons = {
-                    'Diproses': 'fa-clock',
-                    'Berhasil': 'fa-check',
-                    'Ditolak': 'fa-times'
-                };
-
                 return `
-                    <tr class="order-row border-b border-purple-500/5">
-                        <td class="py-3 font-mono text-purple-300">${order.id}</td>
-                        <td class="py-3 text-white">${order.customer.name}</td>
-                        <td class="py-3 text-gray-400">${order.items.length} produk</td>
-                        <td class="py-3 text-white font-medium">${formatPrice(order.total)}</td>
-                        <td class="py-3">
-                            <span class="px-2 py-1 rounded-full text-xs ${statusColors[order.status]} flex items-center gap-1">
-                                <i class="fas ${statusIcons[order.status]} text-[10px]"></i>
-                                ${order.status}
-                            </span>
-                        </td>
-                        <td class="py-3 text-gray-500">${formattedDate}</td>
-                    </tr>
+                    <div class="glass rounded-xl p-3 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-violet-600 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-receipt text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <div class="font-mono text-sm text-purple-300">${order.id}</div>
+                                <div class="text-xs text-gray-500">${order.customer.name} • ${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-semibold text-white">${formatPrice(order.total)}</div>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full border ${statusColors[order.status]}">${order.status}</span>
+                        </div>
+                    </div>
                 `;
             }).join('');
         }
@@ -1873,11 +1874,11 @@ function renderProductsWithQty() {
     // Define unique color-matching logos for each product
     const productLogos = {
         1: { icon: 'fas fa-robot', bg: 'from-purple-600 to-indigo-600', accent: 'text-purple-400' },
-        2: { icon: 'fab fa-facebook-f', bg: 'from-blue-600 to-blue-800', accent: 'text-blue-400' },
-        3: { icon: 'fab fa-facebook', bg: 'from-blue-500 to-cyan-600', accent: 'text-cyan-400' },
-        4: { icon: 'fas fa-user-shield', bg: 'from-indigo-500 to-purple-600', accent: 'text-indigo-400' },
-        5: { icon: 'fas fa-lock', bg: 'from-violet-600 to-purple-700', accent: 'text-violet-400' },
-        6: { icon: 'fas fa-envelope-open', bg: 'from-red-500 to-orange-600', accent: 'text-red-400' },
+        2: { icon: 'fas fa-user', bg: 'from-blue-600 to-blue-800', accent: 'text-blue-400' },
+        3: { icon: 'fas fa-user-check', bg: 'from-blue-500 to-cyan-600', accent: 'text-cyan-400' },
+        4: { icon: 'fas fa-id-card', bg: 'from-indigo-500 to-purple-600', accent: 'text-indigo-400' },
+        5: { icon: 'fas fa-shield-alt', bg: 'from-violet-600 to-purple-700', accent: 'text-violet-400' },
+        6: { icon: 'fas fa-envelope-open-text', bg: 'from-red-500 to-orange-600', accent: 'text-red-400' },
         7: { icon: 'fas fa-envelope', bg: 'from-green-500 to-teal-600', accent: 'text-green-400' }
     };
 
