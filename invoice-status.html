@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Status Pesanan - SllowlyStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6B21A8',
+                        secondary: '#8B5CF6',
+                        accent: '#A78BFA',
+                        dark: '#0F0F1A',
+                        darker: '#08080F',
+                        card: '#1A1A2E',
+                        surface: '#16162A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+
+        .glass {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #6B21A8 0%, #8B5CF6 50%, #A78BFA 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .status-badge {
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .timeline-dot {
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0F0F1A; }
+        ::-webkit-scrollbar-thumb { background: #6B21A8; border-radius: 4px; }
+    </style>
+<base target="_blank">
+</head>
+<body class="bg-dark text-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-xl btn-gradient flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
+                        <i class="fas fa-bolt text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">
+                        SllowlyStore
+                    </span>
+                </a>
+                <div class="flex items-center space-x-3">
+                    <button id="themeToggle" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-purple-500/20 transition-all duration-300 group">
+                        <i class="fas fa-sun text-yellow-400 group-hover:rotate-180 transition-transform duration-500" id="themeIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+            <!-- Hero Search -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center px-4 py-2 rounded-full glass mb-6">
+                    <i class="fas fa-search text-purple-400 mr-2"></i>
+                    <span class="text-sm text-purple-300">Cek Status Pesanan Anda</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-bold mb-4">
+                    <span class="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">Lacak Pesanan</span>
+                </h1>
+                <p class="text-gray-400 max-w-lg mx-auto">Masukkan nomor invoice untuk melihat status dan detail pesanan Anda.</p>
+            </div>
+
+            <!-- Search Box -->
+            <div class="glass rounded-3xl p-8 mb-8">
+                <div class="relative">
+                    <input type="text" id="invoiceSearch" 
+                        class="search-input w-full px-6 py-4 pl-14 rounded-2xl bg-surface border-2 border-purple-500/20 text-white text-lg placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all"
+                        placeholder="INV-XXXXXX"
+                        onkeypress="if(event.key==='Enter') searchInvoice()">
+                    <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg"></i>
+                    <button onclick="searchInvoice()" class="absolute right-2 top-1/2 transform -translate-y-1/2 btn-gradient px-6 py-2 rounded-xl text-white font-medium hover:shadow-lg transition-all">
+                        Cari
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-3 ml-1">Contoh: INV-A1B2C3</p>
+            </div>
+
+            <!-- Search Result -->
+            <div id="searchResult" class="hidden">
+                <!-- Result rendered here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-12">
+                <div class="w-24 h-24 rounded-full glass flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-receipt text-4xl text-gray-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2">Belum Ada Pencarian</h3>
+                <p class="text-gray-500">Masukkan nomor invoice untuk melihat detail pesanan.</p>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="mt-12">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-history text-purple-400 mr-3"></i>Pesanan Terbaru
+                </h2>
+                <div id="recentOrders" class="space-y-4">
+                    <!-- Recent orders rendered here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderRecentOrders();
+        });
+    </script>
+</body>
+</html>
