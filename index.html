@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="theme-fix.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -186,12 +187,26 @@
             background: linear-gradient(135deg, rgba(107, 33, 168, 0.2), rgba(139, 92, 246, 0.1));
         }
 
+        /* Product Logo Styles */
+        .product-logo {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover .product-logo {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .product-icon-bg {
+            transition: all 0.4s ease;
+        }
+        .card-hover:hover .product-icon-bg {
+            filter: brightness(1.2);
+        }
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0F0F1A; }
         ::-webkit-scrollbar-thumb { background: #6B21A8; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #8B5CF6; }
     </style>
-    <link rel="stylesheet" href="theme-fix.css">
 <base target="_blank">
 </head>
 <body class="bg-dark text-gray-100 min-h-screen overflow-x-hidden">
@@ -214,8 +229,8 @@
 
                 <!-- Navigation -->
                 <nav class="hidden md:flex items-center space-x-1">
-                    <a href="index.html" class="px-4 py-2 rounded-xl text-sm font-medium text-purple-300 hover:text-white hover:bg-purple-500/20 transition-all duration-300">
-                        <i class="fas fa-home mr-2"></i>Beranda
+                    <a href="#products" class="px-4 py-2 rounded-xl text-sm font-medium text-purple-300 hover:text-white hover:bg-purple-500/20 transition-all duration-300">
+                        <i class="fas fa-box mr-2"></i>Produk
                     </a>
                     <a href="invoice-status.html" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-purple-500/20 transition-all duration-300">
                         <i class="fas fa-search mr-2"></i>Cek Pesanan
@@ -249,8 +264,8 @@
         <!-- Mobile Menu -->
         <div id="mobileMenu" class="md:hidden hidden glass border-t border-purple-500/10">
             <div class="px-4 py-3 space-y-2">
-                <a href="index.html" class="block px-4 py-2 rounded-xl text-sm font-medium text-purple-300 bg-purple-500/10">
-                    <i class="fas fa-home mr-2"></i>Beranda
+                <a href="#products" class="block px-4 py-2 rounded-xl text-sm font-medium text-purple-300 bg-purple-500/10">
+                    <i class="fas fa-box mr-2"></i>Produk
                 </a>
                 <a href="invoice-status.html" class="block px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:bg-purple-500/10 hover:text-white transition-all">
                     <i class="fas fa-search mr-2"></i>Cek Pesanan
@@ -314,18 +329,23 @@
         </div>
     </section>
 
-    <!-- Products Section -->
+    <!-- Products Section - ETALASE LANGSUNG DI LANDING PAGE -->
     <section id="products" class="py-20 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 scroll-reveal">
+                <div class="inline-flex items-center px-4 py-2 rounded-full glass mb-4 badge-glow">
+                    <i class="fas fa-fire text-orange-400 mr-2"></i>
+                    <span class="text-sm text-purple-300">Produk Unggulan</span>
+                </div>
                 <h2 class="text-3xl sm:text-4xl font-bold mb-4">
                     <span class="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">Etalase Produk</span>
                 </h2>
                 <p class="text-gray-400 max-w-xl mx-auto">Pilih produk dan atur jumlah yang diinginkan. Klik tombol + untuk menambah ke keranjang.</p>
             </div>
 
+            <!-- Product Grid with Color-Matching Logos -->
             <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Products will be rendered here with quantity selector -->
+                <!-- Products rendered here with color-matching logos -->
             </div>
         </div>
     </section>
@@ -397,9 +417,10 @@
 
     <script src="script.js"></script>
     <script>
-        // Initialize index page with quantity selector
+        // Initialize index page with quantity selector and color-matching logos
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            initData();
             renderProductsWithQty();
             updateCartCount();
             initParticles();
