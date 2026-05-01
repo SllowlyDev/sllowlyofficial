@@ -1137,17 +1137,31 @@ function renderAdminDashboard() {
     const totalOrders = orders.length;
     const successOrders = orders.filter(o => o.status === 'Berhasil').length;
     const pendingOrders = orders.filter(o => o.status === 'Diproses').length;
+    const rejectedOrders = orders.filter(o => o.status === 'Ditolak').length;
     const revenue = orders.filter(o => o.status === 'Berhasil').reduce((sum, o) => sum + o.total, 0);
 
     const statTotal = document.getElementById('statTotalOrders');
     const statSuccess = document.getElementById('statSuccess');
     const statPending = document.getElementById('statPending');
     const statRevenue = document.getElementById('statRevenue');
+    const statPendingBadge = document.getElementById('statPendingBadge');
 
     if (statTotal) statTotal.textContent = totalOrders;
     if (statSuccess) statSuccess.textContent = successOrders;
     if (statPending) statPending.textContent = pendingOrders;
     if (statRevenue) statRevenue.textContent = formatPrice(revenue);
+    if (statPendingBadge) statPendingBadge.textContent = pendingOrders;
+
+    // Update orders tab stats if visible
+    const pendingCount = document.getElementById('pendingCount');
+    const verifiedCount = document.getElementById('verifiedCount');
+    const rejectedCount = document.getElementById('rejectedCount');
+    const totalRevenue = document.getElementById('totalRevenue');
+
+    if (pendingCount) pendingCount.textContent = pendingOrders;
+    if (verifiedCount) verifiedCount.textContent = successOrders;
+    if (rejectedCount) rejectedCount.textContent = rejectedOrders;
+    if (totalRevenue) totalRevenue.textContent = formatPrice(revenue);
 
     // Recent orders table
     const tableBody = document.getElementById('recentOrdersTable');
@@ -1167,6 +1181,12 @@ function renderAdminDashboard() {
                     'Ditolak': 'text-red-400 bg-red-500/10'
                 };
 
+                const statusIcons = {
+                    'Diproses': 'fa-clock',
+                    'Berhasil': 'fa-check',
+                    'Ditolak': 'fa-times'
+                };
+
                 return `
                     <tr class="order-row border-b border-purple-500/5">
                         <td class="py-3 font-mono text-purple-300">${order.id}</td>
@@ -1174,7 +1194,10 @@ function renderAdminDashboard() {
                         <td class="py-3 text-gray-400">${order.items.length} produk</td>
                         <td class="py-3 text-white font-medium">${formatPrice(order.total)}</td>
                         <td class="py-3">
-                            <span class="px-2 py-1 rounded-full text-xs ${statusColors[order.status]}">${order.status}</span>
+                            <span class="px-2 py-1 rounded-full text-xs ${statusColors[order.status]} flex items-center gap-1">
+                                <i class="fas ${statusIcons[order.status]} text-[10px]"></i>
+                                ${order.status}
+                            </span>
                         </td>
                         <td class="py-3 text-gray-500">${formattedDate}</td>
                     </tr>
@@ -1184,6 +1207,8 @@ function renderAdminDashboard() {
     }
 }
 
+
+// --- ADMIN STOCK MANAGEMENT ---
 function renderAdminProducts() {
     const container = document.getElementById('adminProductList');
     if (!container) return;
@@ -1191,10 +1216,10 @@ function renderAdminProducts() {
     const products = getProducts();
 
     container.innerHTML = products.map(product => `
-        <div class="glass rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="glass rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4" id="admin-product-${product.id}">
             <div class="flex items-center space-x-4">
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${product.color} flex items-center justify-center flex-shrink-0">
-                    <i class="fab ${product.icon} text-white"></i>
+                    <i class="${product.icon} text-white text-lg"></i>
                 </div>
                 <div>
                     <h4 class="font-semibold text-white">${product.name}</h4>
@@ -1202,23 +1227,193 @@ function renderAdminProducts() {
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-3">
                     <span class="text-xs text-gray-500">Harga:</span>
-                    <input type="number" value="${product.price}" 
-                        onchange="updateProductPrice(${product.id}, this.value)"
-                        class="w-24 px-3 py-2 rounded-lg bg-surface border border-purple-500/20 text-white text-sm focus:outline-none focus:border-purple-500">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-400">Rp</span>
+                        <input type="number" value="${product.price}" 
+                            onchange="updateProductPrice(${product.id}, this.value)"
+                            class="w-28 px-3 py-2 rounded-lg bg-surface border border-purple-500/20 text-white text-sm focus:outline-none focus:border-purple-500">
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-3">
                     <span class="text-xs text-gray-500">Stok:</span>
-                    <input type="number" value="${product.stock}" 
-                        onchange="updateProductStock(${product.id}, this.value)"
-                        class="w-20 px-3 py-2 rounded-lg bg-surface border border-purple-500/20 text-white text-sm focus:outline-none focus:border-purple-500">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="updateStockQty(${product.id}, -1)" class="w-8 h-8 rounded-lg glass flex items-center justify-center text-gray-400 hover:text-white border border-purple-500/20">
+                            <i class="fas fa-minus text-xs"></i>
+                        </button>
+                        <input type="number" id="admin-stock-${product.id}" value="${product.stock}" 
+                            onchange="updateProductStock(${product.id}, this.value)"
+                            class="w-20 px-2 py-2 rounded-lg bg-surface border border-purple-500/20 text-white text-sm text-center focus:outline-none focus:border-purple-500">
+                        <button onclick="updateStockQty(${product.id}, 1)" class="w-8 h-8 rounded-lg glass flex items-center justify-center text-gray-400 hover:text-white border border-purple-500/20">
+                            <i class="fas fa-plus text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
+function updateStockQty(productId, delta) {
+    let products = getProducts();
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    let newStock = product.stock + delta;
+    if (newStock < 0) newStock = 0;
+
+    product.stock = newStock;
+    setStorage('products', products);
+
+    // Update input display
+    const stockInput = document.getElementById(`admin-stock-${productId}`);
+    if (stockInput) stockInput.value = newStock;
+
+    // Show toast
+    Swal.fire({
+        icon: 'success',
+        title: 'Stok Diperbarui',
+        text: `${product.name}: ${newStock} unit`,
+        showConfirmButton: false,
+        timer: 1000,
+        toast: true,
+        position: 'top-end',
+        background: document.documentElement.classList.contains('dark') ? '#1A1A2E' : '#fff',
+        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+    });
+}
+
+// --- ADMIN TRANSACTION VERIFICATION ---
+function renderAdminOrders(filter = 'all') {
+    const tableBody = document.getElementById('allOrdersTable');
+    const noOrdersMsg = document.getElementById('noOrdersMsg');
+
+    if (!tableBody) return;
+
+    let orders = getStorage('orders', []);
+
+    if (filter !== 'all') {
+        orders = orders.filter(o => o.status.toLowerCase() === filter.toLowerCase());
+    }
+
+    if (orders.length === 0) {
+        tableBody.innerHTML = '';
+        if (noOrdersMsg) noOrdersMsg.classList.remove('hidden');
+        return;
+    }
+
+    if (noOrdersMsg) noOrdersMsg.classList.add('hidden');
+
+    const statusColors = {
+        'Diproses': 'text-yellow-400 bg-yellow-500/10',
+        'Berhasil': 'text-green-400 bg-green-500/10',
+        'Ditolak': 'text-red-400 bg-red-500/10'
+    };
+
+    const statusIcons = {
+        'Diproses': 'fa-clock',
+        'Berhasil': 'fa-check',
+        'Ditolak': 'fa-times'
+    };
+
+    tableBody.innerHTML = orders.map(order => {
+        const date = new Date(order.date);
+        const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+        return `
+            <tr class="order-row border-b border-purple-500/5" id="order-${order.id}">
+                <td class="py-4 font-mono text-purple-300">${order.id}</td>
+                <td class="py-4">
+                    <div class="text-white font-medium">${order.customer.name}</div>
+                    <div class="text-xs text-gray-500">${order.customer.phone}</div>
+                </td>
+                <td class="py-4">
+                    <div class="text-white">${order.items.map(i => i.name).join(', ')}</div>
+                    <div class="text-xs text-gray-500">${order.items.length} item • ${formatPrice(order.total)}</div>
+                </td>
+                <td class="py-4 text-white font-medium">${formatPrice(order.total)}</td>
+                <td class="py-4">
+                    <span class="px-2 py-1 rounded-full text-xs ${statusColors[order.status]} flex items-center gap-1 w-fit">
+                        <i class="fas ${statusIcons[order.status]} text-[10px]"></i>
+                        ${order.status}
+                    </span>
+                </td>
+                <td class="py-4">
+                    ${order.proofImage ? `
+                        <button onclick="viewProof('${order.id}')" class="text-purple-400 hover:text-purple-300 flex items-center gap-1">
+                            <i class="fas fa-image"></i> <span class="text-xs">Lihat</span>
+                        </button>
+                    ` : '<span class="text-gray-600 text-xs">-</span>'}
+                </td>
+                <td class="py-4">
+                    <div class="flex items-center space-x-1">
+                        <button onclick="verifyOrder('${order.id}', 'Berhasil')" 
+                            class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center hover:bg-green-500/30 transition-all"
+                            title="Verifikasi & Terima">
+                            <i class="fas fa-check text-green-400 text-xs"></i>
+                        </button>
+                        <button onclick="verifyOrder('${order.id}', 'Ditolak')" 
+                            class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center hover:bg-red-500/30 transition-all"
+                            title="Tolak Pesanan">
+                            <i class="fas fa-times text-red-400 text-xs"></i>
+                        </button>
+                        <button onclick="viewOrderDetail('${order.id}')" 
+                            class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center hover:bg-purple-500/30 transition-all"
+                            title="Detail">
+                            <i class="fas fa-eye text-purple-400 text-xs"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function verifyOrder(orderId, newStatus) {
+    let orders = getStorage('orders', []);
+    const order = orders.find(o => o.id === orderId);
+
+    if (!order) return;
+
+    // Show confirmation for verification
+    const actionText = newStatus === 'Berhasil' ? 'menerima' : 'menolak';
+
+    Swal.fire({
+        icon: 'warning',
+        title: `Konfirmasi ${newStatus}`,
+        html: `Anda yakin ingin ${actionText} pesanan <b>${orderId}</b>?`,
+        showCancelButton: true,
+        confirmButtonColor: newStatus === 'Berhasil' ? '#22c55e' : '#ef4444',
+        cancelButtonColor: '#6B21A8',
+        confirmButtonText: `Ya, ${newStatus}`,
+        cancelButtonText: 'Batal',
+        background: document.documentElement.classList.contains('dark') ? '#1A1A2E' : '#fff',
+        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            order.status = newStatus;
+            order.verifiedAt = new Date().toISOString();
+            order.verifiedBy = 'admin';
+            setStorage('orders', orders);
+
+            Swal.fire({
+                icon: 'success',
+                title: `Pesanan ${newStatus}`,
+                text: `Pesanan ${orderId} telah ${newStatus.toLowerCase()}.`,
+                showConfirmButton: false,
+                timer: 1500,
+                toast: true,
+                position: 'top-end',
+                background: document.documentElement.classList.contains('dark') ? '#1A1A2E' : '#fff',
+                color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+            });
+
+            renderAdminOrders(currentOrderFilter);
+            renderAdminDashboard();
+        }
+    });
+}
 function updateProductPrice(productId, newPrice) {
     let products = getProducts();
     const product = products.find(p => p.id === productId);
@@ -1677,13 +1872,13 @@ function renderProductsWithQty() {
 
     // Define unique color-matching logos for each product
     const productLogos = {
-        1: { icon: 'fa-robot', bg: 'from-purple-600 to-indigo-600', accent: 'text-purple-400' },
-        2: { icon: 'fa-facebook-f', bg: 'from-blue-600 to-blue-800', accent: 'text-blue-400' },
-        3: { icon: 'fa-facebook', bg: 'from-blue-500 to-cyan-600', accent: 'text-cyan-400' },
-        4: { icon: 'fa-user-shield', bg: 'from-indigo-500 to-purple-600', accent: 'text-indigo-400' },
-        5: { icon: 'fa-lock', bg: 'from-violet-600 to-purple-700', accent: 'text-violet-400' },
-        6: { icon: 'fa-envelope-open', bg: 'from-red-500 to-orange-600', accent: 'text-red-400' },
-        7: { icon: 'fa-envelope', bg: 'from-green-500 to-teal-600', accent: 'text-green-400' }
+        1: { icon: 'fas fa-robot', bg: 'from-purple-600 to-indigo-600', accent: 'text-purple-400' },
+        2: { icon: 'fab fa-facebook-f', bg: 'from-blue-600 to-blue-800', accent: 'text-blue-400' },
+        3: { icon: 'fab fa-facebook', bg: 'from-blue-500 to-cyan-600', accent: 'text-cyan-400' },
+        4: { icon: 'fas fa-user-shield', bg: 'from-indigo-500 to-purple-600', accent: 'text-indigo-400' },
+        5: { icon: 'fas fa-lock', bg: 'from-violet-600 to-purple-700', accent: 'text-violet-400' },
+        6: { icon: 'fas fa-envelope-open', bg: 'from-red-500 to-orange-600', accent: 'text-red-400' },
+        7: { icon: 'fas fa-envelope', bg: 'from-green-500 to-teal-600', accent: 'text-green-400' }
     };
 
     grid.innerHTML = products.map((product, index) => {
@@ -1705,7 +1900,7 @@ function renderProductsWithQty() {
 
                 <!-- Product Logo Icon - Color Matching -->
                 <div class="product-logo relative z-10 w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
-                    <i class="fab ${logo.icon} text-3xl text-white drop-shadow-lg"></i>
+                    <i class="${logo.icon} text-3xl drop-shadow-lg"></i>
                 </div>
 
                 <!-- Category Badge -->
