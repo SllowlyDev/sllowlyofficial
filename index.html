@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SllowlyStore - Toko Akun & Tools Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6B21A8',
+                        secondary: '#8B5CF6',
+                        accent: '#A78BFA',
+                        dark: '#0F0F1A',
+                        darker: '#08080F',
+                        card: '#1A1A2E',
+                        surface: '#16162A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+
+        .glass {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .glow {
+            box-shadow: 0 0 30px rgba(107, 33, 168, 0.3), 0 0 60px rgba(139, 92, 246, 0.1);
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 40px rgba(107, 33, 168, 0.5), 0 0 80px rgba(139, 92, 246, 0.2);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #6B21A8 0%, #8B5CF6 50%, #A78BFA 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(139, 92, 246, 0.4);
+            border-radius: 50%;
+            animation: particleFloat 15s infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .badge-glow {
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(139, 92, 246, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.8); }
+        }
+
+        .cart-bounce {
+            animation: cartBounce 0.5s ease;
+        }
+
+        @keyframes cartBounce {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(0.9); }
+            75% { transform: scale(1.1); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0F0F1A; }
+        ::-webkit-scrollbar-thumb { background: #6B21A8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B5CF6; }
+
+        .light-mode ::-webkit-scrollbar-track { background: #f3f4f6; }
+        .light-mode ::-webkit-scrollbar-thumb { background: #8B5CF6; }
+    </style>
+<base target="_blank">
+</head>
+<body class="bg-dark text-gray-100 min-h-screen overflow-x-hidden">
+    <!-- Particles Background -->
+    <div id="particles" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-xl btn-gradient flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
+                        <i class="fas fa-bolt text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">
+                        SllowlyStore
+                    </span>
+                </a>
+
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="index.html" class="px-4 py-2 rounded-xl text-sm font-medium text-purple-300 hover:text-white hover:bg-purple-500/20 transition-all duration-300">
+                        <i class="fas fa-home mr-2"></i>Beranda
+                    </a>
+                    <a href="invoice-status.html" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-purple-500/20 transition-all duration-300">
+                        <i class="fas fa-search mr-2"></i>Cek Pesanan
+                    </a>
+                    <a href="admin.html" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-purple-500/20 transition-all duration-300">
+                        <i class="fas fa-cog mr-2"></i>Admin
+                    </a>
+                </nav>
+
+                <!-- Right Side -->
+                <div class="flex items-center space-x-3">
+                    <!-- Dark Mode Toggle -->
+                    <button id="themeToggle" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-purple-500/20 transition-all duration-300 group">
+                        <i class="fas fa-sun text-yellow-400 group-hover:rotate-180 transition-transform duration-500" id="themeIcon"></i>
+                    </button>
+
+                    <!-- Cart -->
+                    <a href="checkout.html" class="relative w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-purple-500/20 transition-all duration-300 group" id="cartBtn">
+                        <i class="fas fa-shopping-cart text-purple-300 group-hover:text-white transition-colors"></i>
+                        <span id="cartCount" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-xs flex items-center justify-center font-bold text-white hidden">0</span>
+                    </a>
+
+                    <!-- Mobile Menu -->
+                    <button id="mobileMenuBtn" class="md:hidden w-10 h-10 rounded-xl glass flex items-center justify-center">
+                        <i class="fas fa-bars text-purple-300"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden hidden glass border-t border-purple-500/10">
+            <div class="px-4 py-3 space-y-2">
+                <a href="index.html" class="block px-4 py-2 rounded-xl text-sm font-medium text-purple-300 bg-purple-500/10">
+                    <i class="fas fa-home mr-2"></i>Beranda
+                </a>
+                <a href="invoice-status.html" class="block px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:bg-purple-500/10 hover:text-white transition-all">
+                    <i class="fas fa-search mr-2"></i>Cek Pesanan
+                </a>
+                <a href="admin.html" class="block px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:bg-purple-500/10 hover:text-white transition-all">
+                    <i class="fas fa-cog mr-2"></i>Admin
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-transparent to-transparent"></div>
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center">
+                <div class="inline-flex items-center px-4 py-2 rounded-full glass mb-6 badge-glow">
+                    <span class="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
+                    <span class="text-sm text-purple-300">Toko Digital Terpercaya</span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold mb-6 leading-tight">
+                    <span class="bg-gradient-to-r from-purple-400 via-violet-300 to-purple-500 bg-clip-text text-transparent">
+                        Akun & Tools
+                    </span>
+                    <br>
+                    <span class="text-white">Berkualitas Tinggi</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Jual beli akun Facebook, Gmail, dan tools otomatis dengan harga terjangkau. 
+                    Proses cepat, aman, dan terpercaya.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#products" class="btn-gradient px-8 py-4 rounded-full text-white font-semibold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-shopping-bag mr-2"></i>Lihat Produk
+                    </a>
+                    <a href="invoice-status.html" class="glass px-8 py-4 rounded-full text-purple-300 font-semibold text-lg hover:bg-purple-500/20 transition-all duration-300 border border-purple-500/30">
+                        <i class="fas fa-search mr-2"></i>Cek Pesanan
+                    </a>
+                </div>
+
+                <!-- Stats -->
+                <div class="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-3xl mx-auto">
+                    <div class="glass rounded-2xl p-4 float" style="animation-delay: 0s;">
+                        <div class="text-2xl font-bold text-purple-400">500+</div>
+                        <div class="text-sm text-gray-500">Produk Terjual</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4 float" style="animation-delay: 0.5s;">
+                        <div class="text-2xl font-bold text-purple-400">99%</div>
+                        <div class="text-sm text-gray-500">Pelanggan Puas</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4 float" style="animation-delay: 1s;">
+                        <div class="text-2xl font-bold text-purple-400">24/7</div>
+                        <div class="text-sm text-gray-500">Layanan Support</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4 float" style="animation-delay: 1.5s;">
+                        <div class="text-2xl font-bold text-purple-400">100%</div>
+                        <div class="text-sm text-gray-500">Aman & Terpercaya</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                    <span class="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">Produk Unggulan</span>
+                </h2>
+                <p class="text-gray-400 max-w-xl mx-auto">Pilih produk yang sesuai dengan kebutuhan Anda. Semua produk telah melalui quality check.</p>
+            </div>
+
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Products will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                    <span class="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">Mengapa Memilih Kami?</span>
+                </h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass rounded-3xl p-8 card-hover scroll-reveal">
+                    <div class="w-16 h-16 rounded-2xl btn-gradient flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">Aman & Terpercaya</h3>
+                    <p class="text-gray-400 leading-relaxed">Semua transaksi dilindungi dengan sistem verifikasi bukti transfer. Garansi uang kembali jika produk bermasalah.</p>
+                </div>
+                <div class="glass rounded-3xl p-8 card-hover scroll-reveal">
+                    <div class="w-16 h-16 rounded-2xl btn-gradient flex items-center justify-center mb-6">
+                        <i class="fas fa-bolt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">Proses Cepat</h3>
+                    <p class="text-gray-400 leading-relaxed">Pesanan diproses dalam hitungan menit setelah pembayaran dikonfirmasi. Tidak perlu menunggu lama.</p>
+                </div>
+                <div class="glass rounded-3xl p-8 card-hover scroll-reveal">
+                    <div class="w-16 h-16 rounded-2xl btn-gradient flex items-center justify-center mb-6">
+                        <i class="fas fa-headset text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">Support 24/7</h3>
+                    <p class="text-gray-400 leading-relaxed">Tim support kami siap membantu kapan saja melalui WhatsApp. Respon cepat dan ramah.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-purple-500/10 py-12 px-4 sm:px-6 lg:px-8 mt-20">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl btn-gradient flex items-center justify-center">
+                        <i class="fas fa-bolt text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-white">SllowlyStore</span>
+                        <p class="text-sm text-gray-500">Toko Digital Terpercaya</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6 text-sm text-gray-500">
+                    <span>© 2024 SllowlyStore. All rights reserved.</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-purple-500/20 transition-all">
+                        <i class="fab fa-whatsapp text-green-400"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-purple-500/20 transition-all">
+                        <i class="fab fa-telegram text-blue-400"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-purple-500/20 transition-all">
+                        <i class="fab fa-instagram text-pink-400"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize index page
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderProducts();
+            updateCartCount();
+            initParticles();
+            initScrollReveal();
+            initMobileMenu();
+        });
+    </script>
+</body>
+</html>
