@@ -1,0 +1,260 @@
+/* ============================================
+   THEME FIXES - Dark/Light Mode Consistency
+   ============================================ */
+
+/* Base transitions for smooth theme switching */
+html, body, div, span, p, h1, h2, h3, h4, h5, h6, 
+input, textarea, button, a, li, td, th, label {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ============================================
+   LIGHT MODE OVERRIDES
+   ============================================ */
+
+html.light body {
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #f3f4f6 100%);
+    color: #1f2937;
+}
+
+/* Glass morphism in light mode */
+html.light .glass {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 24px rgba(107, 33, 168, 0.08);
+}
+
+html.light header.glass {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+/* Text colors in light mode */
+html.light .text-gray-100 { color: #111827 !important; }
+html.light .text-gray-200 { color: #1f2937 !important; }
+html.light .text-gray-300 { color: #374151 !important; }
+html.light .text-gray-400 { color: #4b5563 !important; }
+html.light .text-gray-500 { color: #6b7280 !important; }
+html.light .text-gray-600 { color: #9ca3af !important; }
+
+/* White text becomes dark in light mode */
+html.light .text-white:not(.btn-gradient *):not(button *) { 
+    color: #111827 !important; 
+}
+
+/* Headings */
+html.light h1, 
+html.light h2, 
+html.light h3, 
+html.light h4 {
+    color: #111827;
+}
+
+html.light h1 span.bg-clip-text,
+html.light h2 span.bg-clip-text {
+    color: transparent !important;
+}
+
+/* Background colors */
+html.light .bg-dark { 
+    background: #f3f4f6; 
+}
+html.light .bg-surface { 
+    background: rgba(243, 244, 246, 0.9); 
+    border-color: rgba(139, 92, 246, 0.2);
+}
+html.light .bg-card { 
+    background: #ffffff; 
+}
+
+/* Input fields */
+html.light input, 
+html.light textarea, 
+html.light select {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: #1f2937;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* Price tag */
+html.light .price-tag {
+    background: linear-gradient(135deg, rgba(107, 33, 168, 0.15), rgba(139, 92, 246, 0.1));
+}
+
+/* Gradient buttons always white text */
+html.light .btn-gradient,
+html.light .btn-gradient * {
+    color: white !important;
+}
+
+/* Status badges */
+html.light .bg-yellow-500\/20 { 
+    background: rgba(234, 179, 8, 0.15) !important; 
+}
+html.light .bg-green-500\/20 { 
+    background: rgba(34, 197, 94, 0.15) !important; 
+}
+html.light .bg-red-500\/20 { 
+    background: rgba(239, 68, 68, 0.15) !important; 
+}
+html.light .bg-purple-500\/20 { 
+    background: rgba(139, 92, 246, 0.15) !important; 
+}
+
+/* Quantity selector */
+html.light .qty-selector {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+html.light .qty-selector input {
+    color: #1f2937;
+}
+
+/* Payment cards */
+html.light .payment-card {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+html.light .payment-card.selected {
+    background: rgba(139, 92, 246, 0.1);
+}
+
+/* Tables */
+html.light table {
+    color: #1f2937;
+}
+html.light th {
+    color: #6b7280;
+}
+html.light td {
+    color: #374151;
+}
+
+/* Scrollbar */
+html.light ::-webkit-scrollbar-track { 
+    background: #f3f4f6; 
+}
+html.light ::-webkit-scrollbar-thumb { 
+    background: #8B5CF6; 
+}
+
+/* Sidebar */
+html.light aside.glass {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* Upload area */
+html.light .upload-area {
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+/* Modal */
+html.light .modal-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================
+   OVERLAPPING FIXES
+   ============================================ */
+
+/* Ensure sections don't overlap */
+section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Glass cards spacing */
+.glass-card {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+}
+
+.glass + .glass {
+    margin-top: 1.5rem;
+}
+
+/* Checkout container */
+.checkout-container {
+    position: relative;
+    z-index: 1;
+}
+
+.step-container {
+    position: relative;
+    z-index: 2;
+}
+
+.content-section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Fix z-index hierarchy */
+header { 
+    position: fixed !important;
+    z-index: 50 !important; 
+}
+
+main { 
+    position: relative;
+    z-index: 1; 
+}
+
+#particles { 
+    z-index: 0; 
+}
+
+/* Prevent text overlap */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Mobile fixes */
+@media (max-width: 768px) {
+    .glass {
+        word-wrap: break-word;
+    }
+
+    .order-row td {
+        min-width: 120px;
+    }
+
+    /* Prevent horizontal scroll */
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Fix sticky sidebar on mobile */
+    aside {
+        position: relative !important;
+        width: 100% !important;
+    }
+}
+
+/* Button disabled state */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Smooth theme transition */
+html {
+    transition: background-color 0.5s ease;
+}
