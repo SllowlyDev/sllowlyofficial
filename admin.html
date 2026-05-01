@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SllowlyStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6B21A8',
+                        secondary: '#8B5CF6',
+                        accent: '#A78BFA',
+                        dark: '#0F0F1A',
+                        darker: '#08080F',
+                        card: '#1A1A2E',
+                        surface: '#16162A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+
+        .glass {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #6B21A8 0%, #8B5CF6 50%, #A78BFA 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover, .sidebar-item.active {
+            background: rgba(139, 92, 246, 0.15);
+            border-right: 3px solid #8B5CF6;
+        }
+
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .order-row {
+            transition: all 0.2s ease;
+        }
+
+        .order-row:hover {
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: rgba(139, 92, 246, 0.2);
+            color: #A78BFA;
+            border-color: #8B5CF6;
+        }
+
+        .modal-overlay {
+            backdrop-filter: blur(10px);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0F0F1A; }
+        ::-webkit-scrollbar-thumb { background: #6B21A8; border-radius: 4px; }
+    </style>
+<base target="_blank">
+</head>
+<body class="bg-dark text-gray-100 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-dark">
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-violet-900/20"></div>
+        <div class="glass rounded-3xl p-8 w-full max-w-md mx-4 relative z-10">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl btn-gradient flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-lock text-white text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Admin Login</h1>
+                <p class="text-gray-500 mt-1">SllowlyStore Dashboard</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Username</label>
+                    <input type="text" id="adminUser" class="w-full px-4 py-3 rounded-xl bg-surface border border-purple-500/20 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all" placeholder="admin">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Password</label>
+                    <div class="relative">
+                        <input type="password" id="adminPass" class="w-full px-4 py-3 rounded-xl bg-surface border border-purple-500/20 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all" placeholder="••••••••">
+                        <button onclick="togglePassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white">
+                            <i class="fas fa-eye" id="passIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                <button onclick="login()" class="w-full btn-gradient py-3 rounded-xl text-white font-bold hover:shadow-lg transition-all">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Masuk
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Sidebar -->
+        <aside class="fixed left-0 top-0 bottom-0 w-64 glass border-r border-purple-500/10 z-40 hidden lg:block">
+            <div class="p-6">
+                <a href="index.html" class="flex items-center space-x-3 mb-10">
+                    <div class="w-10 h-10 rounded-xl btn-gradient flex items-center justify-center">
+                        <i class="fas fa-bolt text-white"></i>
+                    </div>
+                    <span class="text-lg font-bold text-white">SllowlyStore</span>
+                </a>
+
+                <nav class="space-y-2">
+                    <button onclick="showTab('overview')" class="sidebar-item active w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left" id="tab-overview">
+                        <i class="fas fa-chart-line text-purple-400 w-5"></i>
+                        <span>Overview</span>
+                    </button>
+                    <button onclick="showTab('products')" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left text-gray-400" id="tab-products">
+                        <i class="fas fa-box text-purple-400 w-5"></i>
+                        <span>Kelola Produk</span>
+                    </button>
+                    <button onclick="showTab('orders')" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left text-gray-400" id="tab-orders">
+                        <i class="fas fa-shopping-bag text-purple-400 w-5"></i>
+                        <span>Daftar Pesanan</span>
+                    </button>
+                    <a href="index.html" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left text-gray-400">
+                        <i class="fas fa-store text-purple-400 w-5"></i>
+                        <span>Lihat Toko</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="absolute bottom-0 left-0 right-0 p-6">
+                <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl glass hover:bg-red-500/20 text-red-400 transition-all">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Keluar</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Mobile Header -->
+        <header class="lg:hidden fixed top-0 left-0 right-0 z-30 glass">
+            <div class="flex items-center justify-between px-4 h-14">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg btn-gradient flex items-center justify-center">
+                        <i class="fas fa-bolt text-white text-sm"></i>
+                    </div>
+                    <span class="font-bold text-white">Admin</span>
+                </div>
+                <button onclick="logout()" class="text-red-400">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="lg:ml-64 pt-14 lg:pt-0 pb-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto py-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white" id="pageTitle">Dashboard Overview</h1>
+                        <p class="text-gray-500 text-sm mt-1">Kelola toko Anda dengan mudah</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button id="themeToggle" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-purple-500/20 transition-all">
+                            <i class="fas fa-sun text-yellow-400" id="themeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Overview Tab -->
+                <div id="content-overview" class="space-y-8">
+                    <!-- Stats -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="stat-card glass rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                                    <i class="fas fa-shopping-bag text-purple-400"></i>
+                                </div>
+                                <span class="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded-full">+12%</span>
+                            </div>
+                            <div class="text-2xl font-bold text-white" id="statTotalOrders">0</div>
+                            <div class="text-sm text-gray-500">Total Pesanan</div>
+                        </div>
+                        <div class="stat-card glass rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                </div>
+                                <span class="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded-full">+8%</span>
+                            </div>
+                            <div class="text-2xl font-bold text-white" id="statSuccess">0</div>
+                            <div class="text-sm text-gray-500">Pesanan Berhasil</div>
+                        </div>
+                        <div class="stat-card glass rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                                    <i class="fas fa-clock text-yellow-400"></i>
+                                </div>
+                            </div>
+                            <div class="text-2xl font-bold text-white" id="statPending">0</div>
+                            <div class="text-sm text-gray-500">Diproses</div>
+                        </div>
+                        <div class="stat-card glass rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                    <i class="fas fa-money-bill-wave text-blue-400"></i>
+                                </div>
+                            </div>
+                            <div class="text-2xl font-bold text-white" id="statRevenue">Rp0</div>
+                            <div class="text-sm text-gray-500">Total Pendapatan</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders Table -->
+                    <div class="glass rounded-3xl p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-bold">Pesanan Terbaru</h2>
+                            <button onclick="showTab('orders')" class="text-sm text-purple-400 hover:text-purple-300">
+                                Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-left text-gray-500 text-sm border-b border-purple-500/10">
+                                        <th class="pb-3 font-medium">Invoice</th>
+                                        <th class="pb-3 font-medium">Pelanggan</th>
+                                        <th class="pb-3 font-medium">Produk</th>
+                                        <th class="pb-3 font-medium">Total</th>
+                                        <th class="pb-3 font-medium">Status</th>
+                                        <th class="pb-3 font-medium">Tanggal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersTable" class="text-sm">
+                                    <!-- Rendered via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Tab -->
+                <div id="content-products" class="hidden space-y-6">
+                    <div class="glass rounded-3xl p-6">
+                        <h2 class="text-lg font-bold mb-6">Kelola Produk & Stok</h2>
+                        <div id="adminProductList" class="space-y-4">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Tab -->
+                <div id="content-orders" class="hidden space-y-6">
+                    <!-- Filter Tabs -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterOrders('all')" class="tab-btn active px-4 py-2 rounded-xl glass border border-purple-500/20 text-sm font-medium" data-filter="all">
+                            Semua
+                        </button>
+                        <button onclick="filterOrders('diproses')" class="tab-btn px-4 py-2 rounded-xl glass border border-purple-500/20 text-sm font-medium text-gray-400" data-filter="diproses">
+                            Diproses
+                        </button>
+                        <button onclick="filterOrders('berhasil')" class="tab-btn px-4 py-2 rounded-xl glass border border-purple-500/20 text-sm font-medium text-gray-400" data-filter="berhasil">
+                            Berhasil
+                        </button>
+                        <button onclick="filterOrders('ditolak')" class="tab-btn px-4 py-2 rounded-xl glass border border-purple-500/20 text-sm font-medium text-gray-400" data-filter="ditolak">
+                            Ditolak
+                        </button>
+                    </div>
+
+                    <div class="glass rounded-3xl p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-left text-gray-500 text-sm border-b border-purple-500/10">
+                                        <th class="pb-3 font-medium">Invoice</th>
+                                        <th class="pb-3 font-medium">Pelanggan</th>
+                                        <th class="pb-3 font-medium">Produk</th>
+                                        <th class="pb-3 font-medium">Total</th>
+                                        <th class="pb-3 font-medium">Status</th>
+                                        <th class="pb-3 font-medium">Bukti</th>
+                                        <th class="pb-3 font-medium">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allOrdersTable" class="text-sm">
+                                    <!-- Rendered via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="noOrdersMsg" class="hidden text-center py-12">
+                            <i class="fas fa-inbox text-4xl text-gray-600 mb-4"></i>
+                            <p class="text-gray-500">Tidak ada pesanan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0 bg-black/60" onclick="closeOrderModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="glass rounded-3xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto relative">
+                <button onclick="closeOrderModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-purple-500/20 transition-all">
+                    <i class="fas fa-times text-gray-400"></i>
+                </button>
+                <div id="modalContent">
+                    <!-- Rendered via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAdminLogin();
+        });
+    </script>
+</body>
+</html>
