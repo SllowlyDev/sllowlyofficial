@@ -1,8 +1,3 @@
-// ============================================
-// SllowlyStore - Main JavaScript
-// LocalStorage-based e-commerce system
-// ============================================
-
 // --- DATA INITIALIZATION ---
 const DEFAULT_PRODUCTS = [
     {
@@ -156,8 +151,14 @@ function initTheme() {
         if (icon) icon.className = 'fas fa-sun text-yellow-400 group-hover:rotate-180 transition-transform duration-500';
     }
 
+    // Force re-render of product cards if on index page
+    if (document.getElementById('productGrid') && typeof renderProductsWithQty === 'function') {
+        renderProductsWithQty();
+    }
+
     const toggle = document.getElementById('themeToggle');
     if (toggle) {
+        toggle.removeEventListener('click', toggleTheme);
         toggle.addEventListener('click', toggleTheme);
     }
 }
@@ -180,7 +181,23 @@ function toggleTheme() {
         document.body.classList.remove('bg-gray-50', 'text-gray-900');
     }
 
-    initTheme();
+    // Update icon immediately
+    const icon = document.getElementById('themeIcon');
+    if (icon) {
+        if (isDark) {
+            icon.className = 'fas fa-moon text-purple-400 group-hover:rotate-180 transition-transform duration-500';
+        } else {
+            icon.className = 'fas fa-sun text-yellow-400 group-hover:rotate-180 transition-transform duration-500';
+        }
+    }
+
+    // Force re-render to update colors
+    if (document.getElementById('productGrid') && typeof renderProductsWithQty === 'function') {
+        renderProductsWithQty();
+    }
+    if (document.getElementById('cartItems') && typeof renderCheckout === 'function') {
+        renderCheckout();
+    }
 }
 
 // --- PARTICLES ---
