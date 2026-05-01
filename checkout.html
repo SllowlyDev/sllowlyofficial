@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - SllowlyStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6B21A8',
+                        secondary: '#8B5CF6',
+                        accent: '#A78BFA',
+                        dark: '#0F0F1A',
+                        darker: '#08080F',
+                        card: '#1A1A2E',
+                        surface: '#16162A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+
+        .glass {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #6B21A8 0%, #8B5CF6 50%, #A78BFA 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .payment-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .payment-card.selected {
+            border-color: #8B5CF6;
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .payment-card:hover:not(.selected) {
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        .step-line {
+            background: linear-gradient(90deg, #6B21A8, #8B5CF6);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #8B5CF6;
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .spinner {
+            border: 3px solid rgba(139, 92, 246, 0.2);
+            border-top-color: #8B5CF6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0F0F1A; }
+        ::-webkit-scrollbar-thumb { background: #6B21A8; border-radius: 4px; }
+    </style>
+<base target="_blank">
+</head>
+<body class="bg-dark text-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-xl btn-gradient flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
+                        <i class="fas fa-bolt text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">
+                        SllowlyStore
+                    </span>
+                </a>
+                <div class="flex items-center space-x-3">
+                    <button id="themeToggle" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-purple-500/20 transition-all duration-300 group">
+                        <i class="fas fa-sun text-yellow-400 group-hover:rotate-180 transition-transform duration-500" id="themeIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- Steps -->
+            <div class="flex items-center justify-center mb-12">
+                <div class="flex items-center space-x-4">
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full btn-gradient flex items-center justify-center text-white font-bold">1</div>
+                        <span class="text-xs mt-2 text-purple-300">Keranjang</span>
+                    </div>
+                    <div class="w-16 h-1 rounded-full step-line"></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full glass border border-purple-500/30 flex items-center justify-center text-gray-400 font-bold" id="step2">2</div>
+                        <span class="text-xs mt-2 text-gray-500" id="step2Label">Pembayaran</span>
+                    </div>
+                    <div class="w-16 h-1 rounded-full bg-gray-700" id="stepLine2"></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full glass border border-purple-500/30 flex items-center justify-center text-gray-400 font-bold" id="step3">3</div>
+                        <span class="text-xs mt-2 text-gray-500" id="step3Label">Selesai</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left: Form -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Cart Items -->
+                    <div class="glass rounded-3xl p-6">
+                        <h2 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-shopping-cart text-purple-400 mr-3"></i>Keranjang Belanja
+                        </h2>
+                        <div id="cartItems" class="space-y-4">
+                            <!-- Cart items rendered here -->
+                        </div>
+                        <div id="emptyCart" class="hidden text-center py-12">
+                            <div class="w-20 h-20 rounded-full glass flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-shopping-basket text-3xl text-gray-600"></i>
+                            </div>
+                            <p class="text-gray-500">Keranjang masih kosong</p>
+                            <a href="index.html" class="inline-block mt-4 btn-gradient px-6 py-3 rounded-full text-white font-medium hover:shadow-lg transition-all">
+                                Lihat Produk
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Customer Form -->
+                    <div class="glass rounded-3xl p-6" id="customerForm">
+                        <h2 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-user text-purple-400 mr-3"></i>Data Pembeli
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400 mb-2">Nama Lengkap</label>
+                                <input type="text" id="customerName" class="w-full px-4 py-3 rounded-xl bg-surface border border-purple-500/20 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all" placeholder="Masukkan nama lengkap">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                                <input type="email" id="customerEmail" class="w-full px-4 py-3 rounded-xl bg-surface border border-purple-500/20 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all" placeholder="email@example.com">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-sm font-medium text-gray-400 mb-2">Nomor WhatsApp</label>
+                                <input type="tel" id="customerPhone" class="w-full px-4 py-3 rounded-xl bg-surface border border-purple-500/20 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all" placeholder="0812xxxxxxx">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="glass rounded-3xl p-6" id="paymentSection">
+                        <h2 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-credit-card text-purple-400 mr-3"></i>Metode Pembayaran
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="payment-card glass rounded-2xl p-4 border border-purple-500/20" data-method="transfer" onclick="selectPayment(this)">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                        <i class="fas fa-university text-blue-400 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-white">Transfer Bank</div>
+                                        <div class="text-xs text-gray-500">BCA, BNI, Mandiri</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-card glass rounded-2xl p-4 border border-purple-500/20" data-method="dana" onclick="selectPayment(this)">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 rounded-xl bg-blue-600/20 flex items-center justify-center">
+                                        <i class="fas fa-wallet text-blue-500 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-white">DANA</div>
+                                        <div class="text-xs text-gray-500">E-Wallet</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-card glass rounded-2xl p-4 border border-purple-500/20" data-method="qris" onclick="selectPayment(this)">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                                        <i class="fas fa-qrcode text-purple-400 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-white">QRIS</div>
+                                        <div class="text-xs text-gray-500">Scan QR Code</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Details -->
+                        <div id="paymentDetails" class="mt-6 hidden">
+                            <div class="glass rounded-2xl p-6 border border-purple-500/20">
+                                <h3 class="font-semibold text-white mb-4">Detail Pembayaran</h3>
+                                <div id="paymentInfo" class="space-y-3">
+                                    <!-- Dynamic payment info -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Proof -->
+                    <div class="glass rounded-3xl p-6" id="uploadSection">
+                        <h2 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-upload text-purple-400 mr-3"></i>Upload Bukti Transfer
+                        </h2>
+                        <div class="upload-area rounded-2xl p-8 text-center" id="uploadArea">
+                            <input type="file" id="proofFile" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+                            <div id="uploadPreview" class="hidden mb-4">
+                                <img id="previewImage" class="max-h-48 mx-auto rounded-xl" alt="Preview">
+                            </div>
+                            <div id="uploadPlaceholder">
+                                <div class="w-16 h-16 rounded-full glass flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-cloud-upload-alt text-2xl text-purple-400"></i>
+                                </div>
+                                <p class="text-gray-400 mb-2">Klik atau drag & drop bukti transfer di sini</p>
+                                <p class="text-xs text-gray-600">Format: JPG, PNG, JPEG (Max 5MB)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button id="submitOrder" onclick="submitOrder()" class="w-full btn-gradient py-4 rounded-2xl text-white font-bold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-paper-plane mr-2"></i>Konfirmasi Pesanan
+                    </button>
+                </div>
+
+                <!-- Right: Summary -->
+                <div class="lg:col-span-1">
+                    <div class="glass rounded-3xl p-6 sticky top-24">
+                        <h2 class="text-xl font-bold mb-4">Ringkasan Pesanan</h2>
+                        <div id="orderSummary" class="space-y-3 mb-6">
+                            <!-- Summary items -->
+                        </div>
+                        <div class="border-t border-purple-500/20 pt-4 space-y-2">
+                            <div class="flex justify-between text-gray-400">
+                                <span>Subtotal</span>
+                                <span id="subtotal">Rp0</span>
+                            </div>
+                            <div class="flex justify-between text-gray-400">
+                                <span>Biaya Admin</span>
+                                <span>Rp0</span>
+                            </div>
+                            <div class="flex justify-between text-xl font-bold text-white pt-2 border-t border-purple-500/20">
+                                <span>Total</span>
+                                <span id="totalPrice" class="text-purple-400">Rp0</span>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Preview -->
+                        <div id="invoicePreview" class="mt-6 hidden">
+                            <div class="glass rounded-2xl p-4 border border-green-500/30 bg-green-500/5">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                    <span class="text-green-400 font-semibold">Pesanan Berhasil!</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-2">Nomor Invoice:</p>
+                                <div class="bg-surface rounded-xl p-3 flex items-center justify-between">
+                                    <span id="invoiceNumber" class="font-mono font-bold text-white"></span>
+                                    <button onclick="copyInvoice()" class="text-purple-400 hover:text-purple-300">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <a href="invoice-status.html" class="block mt-3 text-center text-sm text-purple-400 hover:text-purple-300">
+                                    <i class="fas fa-search mr-1"></i>Cek Status Pesanan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderCheckout();
+            initUploadArea();
+        });
+    </script>
+</body>
+</html>
