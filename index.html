@@ -138,13 +138,58 @@
             75% { transform: scale(1.1); }
         }
 
+        /* Quantity Selector Styles */
+        .qty-btn {
+            transition: all 0.2s ease;
+        }
+        .qty-btn:active {
+            transform: scale(0.9);
+        }
+        .qty-btn:hover {
+            background: rgba(139, 92, 246, 0.3);
+        }
+
+        .qty-input {
+            -moz-appearance: textfield;
+        }
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .qty-selector {
+            transition: all 0.3s ease;
+        }
+
+        .qty-selector:focus-within {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        .add-to-cart-anim {
+            animation: addToCartPulse 0.6s ease;
+        }
+
+        @keyframes addToCartPulse {
+            0% { transform: scale(1); }
+            30% { transform: scale(0.95); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .stock-bar {
+            transition: width 0.5s ease;
+        }
+
+        .price-tag {
+            background: linear-gradient(135deg, rgba(107, 33, 168, 0.2), rgba(139, 92, 246, 0.1));
+        }
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0F0F1A; }
         ::-webkit-scrollbar-thumb { background: #6B21A8; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #8B5CF6; }
-
-        .light-mode ::-webkit-scrollbar-track { background: #f3f4f6; }
-        .light-mode ::-webkit-scrollbar-thumb { background: #8B5CF6; }
     </style>
 <base target="_blank">
 </head>
@@ -273,13 +318,13 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 scroll-reveal">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-4">
-                    <span class="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">Produk Unggulan</span>
+                    <span class="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">Etalase Produk</span>
                 </h2>
-                <p class="text-gray-400 max-w-xl mx-auto">Pilih produk yang sesuai dengan kebutuhan Anda. Semua produk telah melalui quality check.</p>
+                <p class="text-gray-400 max-w-xl mx-auto">Pilih produk dan atur jumlah yang diinginkan. Klik tombol + untuk menambah ke keranjang.</p>
             </div>
 
             <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Products will be rendered here -->
+                <!-- Products will be rendered here with quantity selector -->
             </div>
         </div>
     </section>
@@ -351,10 +396,10 @@
 
     <script src="script.js"></script>
     <script>
-        // Initialize index page
+        // Initialize index page with quantity selector
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            renderProducts();
+            renderProductsWithQty();
             updateCartCount();
             initParticles();
             initScrollReveal();
