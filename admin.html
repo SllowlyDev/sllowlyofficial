@@ -91,6 +91,7 @@
         ::-webkit-scrollbar-track { background: #0F0F1A; }
         ::-webkit-scrollbar-thumb { background: #6B21A8; border-radius: 4px; }
     </style>
+    <link rel="stylesheet" href="theme-fix.css">
 <base target="_blank">
 </head>
 <body class="bg-dark text-gray-100 min-h-screen">
@@ -219,16 +220,17 @@
                                 <span class="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded-full">+8%</span>
                             </div>
                             <div class="text-2xl font-bold text-white" id="statSuccess">0</div>
-                            <div class="text-sm text-gray-500">Pesanan Berhasil</div>
+                            <div class="text-sm text-gray-500">Terverifikasi</div>
                         </div>
                         <div class="stat-card glass rounded-2xl p-5">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
                                     <i class="fas fa-clock text-yellow-400"></i>
                                 </div>
+                                <span class="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full" id="statPendingBadge">0</span>
                             </div>
                             <div class="text-2xl font-bold text-white" id="statPending">0</div>
-                            <div class="text-sm text-gray-500">Diproses</div>
+                            <div class="text-sm text-gray-500">Menunggu Verifikasi</div>
                         </div>
                         <div class="stat-card glass rounded-2xl p-5">
                             <div class="flex items-center justify-between mb-3">
@@ -237,7 +239,7 @@
                                 </div>
                             </div>
                             <div class="text-2xl font-bold text-white" id="statRevenue">Rp0</div>
-                            <div class="text-sm text-gray-500">Total Pendapatan</div>
+                            <div class="text-sm text-gray-500">Pendapatan Terverifikasi</div>
                         </div>
                     </div>
 
@@ -284,20 +286,71 @@
                     <!-- Filter Tabs -->
                     <div class="flex flex-wrap gap-2">
                         <button onclick="filterOrders('all')" class="tab-btn active px-4 py-2 rounded-xl glass border border-purple-500/20 text-sm font-medium" data-filter="all">
-                            Semua
+                            <i class="fas fa-list mr-1"></i> Semua
                         </button>
                         <button onclick="filterOrders('diproses')" class="tab-btn px-4 py-2 rounded-xl glass border border-purple-500/20 text-sm font-medium text-gray-400" data-filter="diproses">
-                            Diproses
+                            <i class="fas fa-clock mr-1"></i> Diproses
                         </button>
                         <button onclick="filterOrders('berhasil')" class="tab-btn px-4 py-2 rounded-xl glass border border-purple-500/20 text-sm font-medium text-gray-400" data-filter="berhasil">
-                            Berhasil
+                            <i class="fas fa-check mr-1"></i> Berhasil
                         </button>
                         <button onclick="filterOrders('ditolak')" class="tab-btn px-4 py-2 rounded-xl glass border border-purple-500/20 text-sm font-medium text-gray-400" data-filter="ditolak">
-                            Ditolak
+                            <i class="fas fa-times mr-1"></i> Ditolak
                         </button>
                     </div>
 
+                    <!-- Verification Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="glass rounded-2xl p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                                    <i class="fas fa-clock text-yellow-400 text-sm"></i>
+                                </div>
+                                <span class="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full" id="pendingCount">0</span>
+                            </div>
+                            <div class="text-lg font-bold text-white">Menunggu</div>
+                            <div class="text-xs text-gray-500">Verifikasi</div>
+                        </div>
+                        <div class="glass rounded-2xl p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                </div>
+                                <span class="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded-full" id="verifiedCount">0</span>
+                            </div>
+                            <div class="text-lg font-bold text-white">Terverifikasi</div>
+                            <div class="text-xs text-gray-500">Diterima</div>
+                        </div>
+                        <div class="glass rounded-2xl p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
+                                    <i class="fas fa-times text-red-400 text-sm"></i>
+                                </div>
+                                <span class="text-xs text-red-400 bg-red-500/10 px-2 py-1 rounded-full" id="rejectedCount">0</span>
+                            </div>
+                            <div class="text-lg font-bold text-white">Ditolak</div>
+                            <div class="text-xs text-gray-500">Dibatalkan</div>
+                        </div>
+                        <div class="glass rounded-2xl p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                    <i class="fas fa-money-bill-wave text-blue-400 text-sm"></i>
+                                </div>
+                                <span class="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full" id="totalRevenue">Rp0</span>
+                            </div>
+                            <div class="text-lg font-bold text-white">Pendapatan</div>
+                            <div class="text-xs text-gray-500">Terverifikasi</div>
+                        </div>
+                    </div>
+
                     <div class="glass rounded-3xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-white flex items-center gap-2">
+                                <i class="fas fa-clipboard-check text-purple-400"></i>
+                                Verifikasi Transaksi
+                            </h3>
+                            <span class="text-xs text-gray-500">Klik tombol <i class="fas fa-check text-green-400"></i> untuk verifikasi</span>
+                        </div>
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead>
@@ -307,8 +360,8 @@
                                         <th class="pb-3 font-medium">Produk</th>
                                         <th class="pb-3 font-medium">Total</th>
                                         <th class="pb-3 font-medium">Status</th>
-                                        <th class="pb-3 font-medium">Bukti</th>
-                                        <th class="pb-3 font-medium">Aksi</th>
+                                        <th class="pb-3 font-medium">Bukti TF</th>
+                                        <th class="pb-3 font-medium">Verifikasi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="allOrdersTable" class="text-sm">
