@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SllowlyTools</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .stat-card { transition: transform 0.3s ease; }
+        .stat-card:hover { transform: translateY(-3px); }
+    </style>
+</head>
+<body class="bg-slate-900">
+    <!-- Navigation -->
+    <nav class="bg-slate-800 border-b border-slate-700">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
+                    Sllowly<span class="text-white">Tools</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="licenseType" class="px-3 py-1 bg-emerald-500/20 rounded-full text-emerald-400 text-sm"></span>
+                    <button id="logoutBtn" class="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h1 id="welcomeMessage" class="text-3xl font-bold mb-2"></h1>
+            <p id="expiryInfo" class="text-slate-400"></p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-users text-emerald-400 text-2xl"></i>
+                    <span class="text-2xl font-bold" id="accountsCreated">0</span>
+                </div>
+                <p class="text-slate-400">Accounts Created</p>
+            </div>
+            <div class="stat-card bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-check-circle text-blue-400 text-2xl"></i>
+                    <span class="text-2xl font-bold" id="successRate">0%</span>
+                </div>
+                <p class="text-slate-400">Success Rate</p>
+            </div>
+            <div class="stat-card bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-mobile-alt text-purple-400 text-2xl"></i>
+                    <span class="text-2xl font-bold" id="activeDevices">0</span>
+                </div>
+                <p class="text-slate-400">Active Devices</p>
+            </div>
+            <div class="stat-card bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-clock text-orange-400 text-2xl"></i>
+                    <span class="text-2xl font-bold" id="daysLeft">0</span>
+                </div>
+                <p class="text-slate-400">Days Remaining</p>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-8">
+            <!-- Account Creation Tool -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <h3 class="text-xl font-bold mb-4">
+                    <i class="fas fa-user-plus text-emerald-400 mr-2"></i> Account Creator
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Number of Accounts</label>
+                        <input type="number" id="accountCount" class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg" value="1" min="1" max="100">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Password (optional)</label>
+                        <input type="text" id="customPassword" class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg" placeholder="Auto-generated">
+                    </div>
+                    <button id="startCreationBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg font-semibold hover:shadow-lg transition">
+                        <i class="fas fa-play mr-2"></i> Start Creation
+                    </button>
+                </div>
+                <div id="creationProgress" class="mt-4 hidden">
+                    <div class="bg-slate-700 rounded-full h-2 overflow-hidden">
+                        <div id="progressBar" class="bg-emerald-500 h-2 transition-all" style="width: 0%"></div>
+                    </div>
+                    <p id="progressText" class="text-sm text-slate-400 mt-2 text-center"></p>
+                </div>
+            </div>
+
+            <!-- UID Checker -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <h3 class="text-xl font-bold mb-4">
+                    <i class="fas fa-check-circle text-emerald-400 mr-2"></i> UID Checker
+                </h3>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Enter UIDs (one per line)</label>
+                    <textarea id="uidList" rows="4" class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg" placeholder="1000123456789&#10;1000987654321"></textarea>
+                </div>
+                <button id="checkUidBtn" class="w-full mt-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-search mr-2"></i> Check UIDs
+                </button>
+                <div id="uidResults" class="mt-4 max-h-64 overflow-y-auto space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Recent Accounts Table -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <h3 class="text-xl font-bold mb-4">
+                <i class="fas fa-history text-emerald-400 mr-2"></i> Recent Accounts
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-slate-700">
+                            <th class="text-left py-2">UID</th>
+                            <th class="text-left py-2">Name</th>
+                            <th class="text-left py-2">Created</th>
+                            <th class="text-left py-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountsTable">
+                        <tr>
+                            <td colspan="4" class="text-center text-slate-400 py-4">No accounts created yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/license.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
