@@ -4,210 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activate License - SllowlyTools</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    
     <style>
         * { font-family: 'Inter', sans-serif; }
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-        .license-input {
-            font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .loading-spinner {
-            animation: spin 0.6s linear infinite;
-        }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .license-input { font-family: 'Courier New', monospace; letter-spacing: 1px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-spinner { animation: spin 0.6s linear infinite; }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
     <div class="container mx-auto px-6 py-12">
-        <!-- Header -->
         <div class="text-center mb-10">
-            <a href="index.html" class="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
-                Sllowly<span class="text-white">Tools</span>
-            </a>
+            <a href="index.html" class="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">Sllowly<span class="text-white">Tools</span></a>
             <p class="text-slate-400 mt-2">Activate your license key</p>
         </div>
-
-        <!-- Activation Form -->
         <div class="max-w-md mx-auto">
             <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">
                 <div class="text-center mb-6">
-                    <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-key text-emerald-400 text-3xl"></i>
-                    </div>
+                    <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-key text-emerald-400 text-3xl"></i></div>
                     <h2 class="text-2xl font-bold">Enter License Key</h2>
                     <p class="text-slate-400 text-sm mt-2">Format: SLLOWLY_X_X-XXXXXXXXXXXX</p>
                 </div>
-
                 <form id="activationForm" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium mb-2">License Key</label>
-                        <input type="text" id="licenseKey" 
-                               class="license-input w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg focus:border-emerald-500 focus:outline-none transition"
-                               placeholder="SLLOWLY_1_8-A7B9C2D4E8F1"
-                               autocomplete="off">
+                        <input type="text" id="licenseKey" class="license-input w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg focus:border-emerald-500 focus:outline-none transition" placeholder="SLLOWLY_1_8-A7B9C2D4E8F1" autocomplete="off">
                         <p id="formatHint" class="text-xs text-slate-500 mt-1">Example: SLLOWLY_1_8-A7B9C2D4E8F1</p>
                     </div>
-
                     <div id="errorMessage" class="hidden bg-red-500/10 border border-red-500 rounded-lg p-3 text-red-400 text-sm"></div>
-
-                    <button type="submit" id="activateBtn" 
-                            class="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-check-circle mr-2"></i> Activate License
-                    </button>
+                    <button type="submit" id="activateBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-check-circle mr-2"></i> Activate License</button>
                 </form>
-
-                <div class="mt-6 text-center">
-                    <a href="index.html" class="text-slate-400 hover:text-emerald-400 transition text-sm">
-                        <i class="fas fa-arrow-left mr-1"></i> Back to Home
-                    </a>
-                </div>
+                <div class="mt-6 text-center"><a href="index.html" class="text-slate-400 hover:text-emerald-400 transition text-sm"><i class="fas fa-arrow-left mr-1"></i> Back to Home</a></div>
             </div>
         </div>
     </div>
-
-    <script src="js/config.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/license.js"></script>
-    <script src="js/auth.js"></script>
-    
+    <script src="config.js"></script>
+    <script src="storage.js"></script>
+    <script src="license.js"></script>
+    <script src="auth.js"></script>
     <script>
-        // Rate limiting
-        let activationAttempts = 0;
-        let lastAttemptTime = 0;
-        const MAX_ATTEMPTS = 5;
-        const TIME_WINDOW = 60000; // 1 minute
-
+        let activationAttempts = 0, lastAttemptTime = 0;
+        const MAX_ATTEMPTS = 5, TIME_WINDOW = 60000;
         function checkRateLimit() {
             const now = Date.now();
-            if (now - lastAttemptTime > TIME_WINDOW) {
-                activationAttempts = 0;
-                lastAttemptTime = now;
-                return true;
-            }
-            
-            if (activationAttempts >= MAX_ATTEMPTS) {
-                return false;
-            }
-            
-            activationAttempts++;
-            lastAttemptTime = now;
-            return true;
+            if (now - lastAttemptTime > TIME_WINDOW) { activationAttempts = 0; lastAttemptTime = now; return true; }
+            if (activationAttempts >= MAX_ATTEMPTS) return false;
+            activationAttempts++; lastAttemptTime = now; return true;
         }
-
-        // Real-time format validation
         const licenseInput = document.getElementById('licenseKey');
         const formatHint = document.getElementById('formatHint');
         const errorMessage = document.getElementById('errorMessage');
-        
         licenseInput.addEventListener('input', function(e) {
             let value = e.target.value.toUpperCase();
             e.target.value = value;
-            
             const isValid = validateLicenseFormat(value);
-            if (value.length > 0 && !isValid) {
-                formatHint.className = 'text-xs text-red-400 mt-1';
-                formatHint.textContent = '❌ Invalid format. Use: SLLOWLY_X_X-XXXXXXXXXXXX';
-            } else if (value.length > 0) {
-                formatHint.className = 'text-xs text-emerald-400 mt-1';
-                formatHint.textContent = '✓ Valid format';
-            } else {
-                formatHint.className = 'text-xs text-slate-500 mt-1';
-                formatHint.textContent = 'Example: SLLOWLY_1_8-A7B9C2D4E8F1';
-            }
+            if (value.length > 0 && !isValid) { formatHint.className = 'text-xs text-red-400 mt-1'; formatHint.textContent = '❌ Invalid format. Use: SLLOWLY_X_X-XXXXXXXXXXXX'; }
+            else if (value.length > 0) { formatHint.className = 'text-xs text-emerald-400 mt-1'; formatHint.textContent = '✓ Valid format'; }
+            else { formatHint.className = 'text-xs text-slate-500 mt-1'; formatHint.textContent = 'Example: SLLOWLY_1_8-A7B9C2D4E8F1'; }
         });
-
         document.getElementById('activationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const licenseKey = licenseInput.value.trim().toUpperCase();
-            
-            if (!validateLicenseFormat(licenseKey)) {
-                showError('Invalid Format', 'License key format is incorrect');
-                return;
-            }
-            
-            if (!checkRateLimit()) {
-                showError('Rate Limit Exceeded', 'Too many attempts. Please wait 1 minute.');
-                return;
-            }
-
+            if (!validateLicenseFormat(licenseKey)) { showError('Invalid Format', 'License key format is incorrect'); return; }
+            if (!checkRateLimit()) { showError('Rate Limit Exceeded', 'Too many attempts. Please wait 1 minute.'); return; }
             const activateBtn = document.getElementById('activateBtn');
             const originalText = activateBtn.innerHTML;
             activateBtn.innerHTML = '<i class="fas fa-spinner loading-spinner mr-2"></i> Verifying...';
             activateBtn.disabled = true;
-
             try {
                 const result = await verifyLicense(licenseKey);
-                
                 if (result.success) {
-                    // Get device ID
                     const deviceId = await getDeviceId();
-                    
-                    // Check device limit
                     const canActivate = checkDeviceLimit(result.license, deviceId);
-                    
-                    if (!canActivate.allowed) {
-                        showError('Max Device Reached', `Device limit reached (${canActivate.message})`);
-                        activateBtn.innerHTML = originalText;
-                        activateBtn.disabled = false;
-                        return;
-                    }
-                    
-                    // Activate device
+                    if (!canActivate.allowed) { showError('Max Device Reached', `Device limit reached (${canActivate.message})`); activateBtn.innerHTML = originalText; activateBtn.disabled = false; return; }
                     if (canActivate.newDevice) {
-                        result.license.activated_devices.push({
-                            device_id: deviceId,
-                            activated_at: new Date().toISOString(),
-                            user_agent: navigator.userAgent
-                        });
+                        if (!result.license.activated_devices) result.license.activated_devices = [];
+                        result.license.activated_devices.push({ device_id: deviceId, activated_at: new Date().toISOString(), user_agent: navigator.userAgent });
                     }
-                    
-                    // Save license
                     saveLicense(result.license);
-                    
-                    // Show success and redirect
                     showSuccess('Activation Successful!', 'Redirecting to dashboard...');
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                } else {
-                    showError(result.error, result.message);
-                }
-            } catch (error) {
-                showError('Verification Failed', 'An error occurred. Please try again.');
-                console.error('Activation error:', error);
-            } finally {
-                activateBtn.innerHTML = originalText;
-                activateBtn.disabled = false;
-            }
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+                } else { showError(result.error, result.message); }
+            } catch (error) { showError('Verification Failed', 'An error occurred. Please try again.'); }
+            finally { activateBtn.innerHTML = originalText; activateBtn.disabled = false; }
         });
-
-        function showError(type, message) {
-            errorMessage.className = 'bg-red-500/10 border border-red-500 rounded-lg p-3 text-red-400 text-sm';
-            errorMessage.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> <strong>${type}:</strong> ${message}`;
-            errorMessage.classList.remove('hidden');
-            setTimeout(() => {
-                errorMessage.classList.add('hidden');
-            }, 5000);
-        }
-
-        function showSuccess(message, submessage) {
-            errorMessage.className = 'bg-emerald-500/10 border border-emerald-500 rounded-lg p-3 text-emerald-400 text-sm';
-            errorMessage.innerHTML = `<i class="fas fa-check-circle mr-2"></i> <strong>${message}</strong> ${submessage}`;
-            errorMessage.classList.remove('hidden');
-        }
-
-        // Anti-inspect message
+        function showError(type, message) { errorMessage.className = 'bg-red-500/10 border border-red-500 rounded-lg p-3 text-red-400 text-sm'; errorMessage.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> <strong>${type}:</strong> ${message}`; errorMessage.classList.remove('hidden'); setTimeout(() => errorMessage.classList.add('hidden'), 5000); }
+        function showSuccess(message, submessage) { errorMessage.className = 'bg-emerald-500/10 border border-emerald-500 rounded-lg p-3 text-emerald-400 text-sm'; errorMessage.innerHTML = `<i class="fas fa-check-circle mr-2"></i> <strong>${message}</strong> ${submessage}`; errorMessage.classList.remove('hidden'); }
         console.log("%c🔐 SllowlyTools License System Active", "color: #10b981; font-size: 14px; font-weight: bold;");
     </script>
 </body>
